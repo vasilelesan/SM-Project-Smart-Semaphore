@@ -107,6 +107,9 @@ main.py, folder components/ cu fisierele: leds.py, sensor.py, buzzer.py
 
 - Aplicatie bluetooth terminal (android) pentru testarea comenzilor
 
+## Schema electronica
+![Schema](Pictures/Schema.jpeg)
+
 ## Anexe
 ### Părți semnificative ale codului sursă:
 1. **Clasa pentru controlul led-urilor:**
