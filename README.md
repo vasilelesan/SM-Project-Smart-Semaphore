@@ -32,17 +32,20 @@
 ## Descrierea proiectului 
 Proiectul reprezinta un sistem de semafor inteligent realizat cu raspberry pi pico si controlabil prin bluetooth. Acesta detecteaza prezenta unui obiect in fata semaforului si schimba automat culoarea ledurilor, cu semnal sonor pentru avertizare. Sistemul poate fi controlat si manual prin comenzi bluetooth.
 Proiectul este util in intelegerea interactiunii cu senzori, emiterea comenzilor in timp real si dezvoltarea sistemelor incorporate simple cu functionalitati extinse.
+![Circuit](Pictures/CIRCUIT.jpeg)
+![Circuit2](Pictures/Circuit2.jpeg)
 
 
 ## Componente Hardware
+![RPI PICO](Pictures/RpiPico.jpeg)
 - **Raspberry Pi Pico cu microprocesor RP 2040:** Microcontrolerul principal care rulează codul MicroPython, citește senzorul, controlează LED-urile, buzzerul și comunică prin Bluetooth.
-
+![HC-SR04](Pictures/SenzorHC-SR04.jpeg)
 - **Modul ultrasonic HC-SR04:** Trimite unde ultrasonice (TRIG), măsoară timpul până la revenirea ecoului (ECHO), din acel timp se calculează distanța până la obstacol.
-
+![Bluetooth](Pictures/ModulBluetooth.jpeg)
 - **Modul bluetooth HC-05:** Primește comenzi de tip text prin aplicație terminal bluetooth.
-
+![RPI PICO](Pictures/Leduri.jpeg)
 - **LED-uri: roșu, galben, verde:** Fiecare LED este conectat la un pin GPIO și controlat prin cod (on/off).
-
+![RPI PICO](Pictures/BuzzerActiv.jpeg)
 - **Buzzer Activ:** Avertizare sonoră, emite bip-uri dacă un obiect se apropie prea mult, semnal sonor la schimbarea din verde în roșu,
 
 - **Fire de conexiune si breadboard:** Conectează toate componentele fără lipire.
