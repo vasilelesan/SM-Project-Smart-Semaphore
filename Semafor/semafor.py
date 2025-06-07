@@ -1,19 +1,19 @@
 from machine import Pin, time_pulse_us
 from time import sleep, sleep_ms, sleep_us
 
-# LED-uri (GPIO 15, 14, 13)
+# LED-uri
 red = Pin(15, Pin.OUT)
 yellow = Pin(14, Pin.OUT)
 green = Pin(13, Pin.OUT)
 
-# Senzor HC-SR04 pe GP9 (TRIG) și GP10 (ECHO)
+# HC-SR04: TRIG = GP9, ECHO = GP10
 trig = Pin(9, Pin.OUT)
 echo = Pin(10, Pin.IN)
 
-# Buzzer activ pe GP8
+# Buzzer pe GP8
 buzzer = Pin(8, Pin.OUT)
 
-# Funcție de măsurare a distanței în cm
+# Funcție de măsurare a distanței
 def read_distance_cm():
     trig.low()
     sleep_ms(2)
@@ -28,7 +28,15 @@ def read_distance_cm():
     distance_cm = duration * 0.0343 / 2
     return distance_cm
 
-# Buclă principală: semafor inteligent
+# Funcție pentru controlul buzzer-ului în timp real
+def update_buzzer():
+    dist = read_distance_cm()
+    if dist is not None and dist < 15:
+        buzzer.value(1)
+    else:
+        buzzer.value(0)
+
+# Buclă principală
 while True:
     distance = read_distance_cm()
 
@@ -37,34 +45,34 @@ while True:
         red.value(1)
         yellow.value(0)
         green.value(0)
-        buzzer.value(0)  # Oprește buzzerul
+        buzzer.value(0)
         sleep(0.2)
         continue
 
     print("Distanta:", round(distance, 2), "cm")
 
-    # Buzzer dacă e prea aproape
-    if distance < 15:
-        buzzer.value(1)
-    else:
-        buzzer.value(0)
-
     if distance < 30:
-        # Mașină detectată: semafor trece în verde
         red.value(0)
         yellow.value(1)
-        sleep(0.5)
+        for _ in range(5):  # 0.5s divizat în 5x0.1s
+            update_buzzer()
+            sleep(0.1)
         yellow.value(0)
         green.value(1)
-        sleep(3)
+        for _ in range(30):  # 3s în 30x0.1s
+            update_buzzer()
+            sleep(0.1)
         green.value(0)
         yellow.value(1)
-        sleep(1)
+        for _ in range(10):  # 1s în 10x0.1s
+            update_buzzer()
+            sleep(0.1)
         yellow.value(0)
+        buzzer.value(0)  # asigurăm oprirea buzzer-ului
     else:
-        # Nicio mașină: roșu aprins
         red.value(1)
         yellow.value(0)
         green.value(0)
+        buzzer.value(0)
         sleep(0.2)
 
