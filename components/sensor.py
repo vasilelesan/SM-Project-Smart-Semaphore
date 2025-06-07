@@ -1,4 +1,6 @@
 # components/sensor.py
+# clasa pentru senzorul ultrasonic hc-sr04
+
 from machine import Pin, time_pulse_us
 from time import sleep_ms, sleep_us
 
@@ -8,6 +10,7 @@ class DistanceSensor:
         self.echo = Pin(echo_pin, Pin.IN)
 
     def read_distance_cm(self):
+        # calculeaza distanta in centimetri
         self.trig.low()
         sleep_ms(2)
         self.trig.high()
