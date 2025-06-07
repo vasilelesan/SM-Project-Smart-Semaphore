@@ -7,8 +7,11 @@ yellow = Pin(14, Pin.OUT)
 green = Pin(13, Pin.OUT)
 
 # Senzor HC-SR04 pe GP9 (TRIG) și GP10 (ECHO)
-trig = Pin(9, Pin.OUT)    # TRIG
-echo = Pin(10, Pin.IN)    # ECHO
+trig = Pin(9, Pin.OUT)
+echo = Pin(10, Pin.IN)
+
+# Buzzer activ pe GP8
+buzzer = Pin(8, Pin.OUT)
 
 # Funcție de măsurare a distanței în cm
 def read_distance_cm():
@@ -18,12 +21,11 @@ def read_distance_cm():
     sleep_us(10)
     trig.low()
 
-    duration = time_pulse_us(echo, 1, 30000)  # max 30 ms = ~5 metri
-
+    duration = time_pulse_us(echo, 1, 30000)
     if duration <= 0:
-        return None  # Eroare: nu s-a detectat puls
+        return None
 
-    distance_cm = duration * 0.0343 / 2  # v = 343 m/s = 0.0343 cm/us
+    distance_cm = duration * 0.0343 / 2
     return distance_cm
 
 # Buclă principală: semafor inteligent
@@ -35,10 +37,17 @@ while True:
         red.value(1)
         yellow.value(0)
         green.value(0)
+        buzzer.value(0)  # Oprește buzzerul
         sleep(0.2)
         continue
 
     print("Distanta:", round(distance, 2), "cm")
+
+    # Buzzer dacă e prea aproape
+    if distance < 15:
+        buzzer.value(1)
+    else:
+        buzzer.value(0)
 
     if distance < 30:
         # Mașină detectată: semafor trece în verde
