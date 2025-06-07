@@ -1,4 +1,4 @@
-from machine import Pin, time_pulse_us
+from machine import Pin, time_pulse_us, UART
 from time import sleep, sleep_ms, sleep_us
 
 # LED-uri
@@ -6,14 +6,19 @@ red = Pin(15, Pin.OUT)
 yellow = Pin(14, Pin.OUT)
 green = Pin(13, Pin.OUT)
 
-# HC-SR04: TRIG = GP9, ECHO = GP10
+# HC-SR04
 trig = Pin(9, Pin.OUT)
 echo = Pin(10, Pin.IN)
 
-# Buzzer pe GP8
+# Buzzer
 buzzer = Pin(8, Pin.OUT)
 
-# Funcție de măsurare a distanței
+# Bluetooth UART pe GP0 (TX), GP1 (RX)
+uart = UART(0, baudrate=9600)
+
+# Variabilă pentru activare/dezactivare semafor
+semafor_activ = True
+
 def read_distance_cm():
     trig.low()
     sleep_ms(2)
@@ -25,10 +30,8 @@ def read_distance_cm():
     if duration <= 0:
         return None
 
-    distance_cm = duration * 0.0343 / 2
-    return distance_cm
+    return duration * 0.0343 / 2
 
-# Funcție pentru controlul buzzer-ului în timp real
 def update_buzzer():
     dist = read_distance_cm()
     if dist is not None and dist < 15:
@@ -36,8 +39,24 @@ def update_buzzer():
     else:
         buzzer.value(0)
 
-# Buclă principală
 while True:
+    # Citim comenzi de la HC-05
+    if uart.any():
+        comanda = uart.read().decode().strip().lower()
+        print("Comanda Bluetooth:", comanda)
+        if comanda == "start":
+            semafor_activ = True
+        elif comanda == "stop":
+            semafor_activ = False
+            red.value(0)
+            yellow.value(0)
+            green.value(0)
+            buzzer.value(0)
+
+    if not semafor_activ:
+        sleep(0.1)
+        continue
+
     distance = read_distance_cm()
 
     if distance is None:
@@ -54,21 +73,21 @@ while True:
     if distance < 30:
         red.value(0)
         yellow.value(1)
-        for _ in range(5):  # 0.5s divizat în 5x0.1s
+        for _ in range(5):
             update_buzzer()
             sleep(0.1)
         yellow.value(0)
         green.value(1)
-        for _ in range(30):  # 3s în 30x0.1s
+        for _ in range(30):
             update_buzzer()
             sleep(0.1)
         green.value(0)
         yellow.value(1)
-        for _ in range(10):  # 1s în 10x0.1s
+        for _ in range(10):
             update_buzzer()
             sleep(0.1)
         yellow.value(0)
-        buzzer.value(0)  # asigurăm oprirea buzzer-ului
+        buzzer.value(0)
     else:
         red.value(1)
         yellow.value(0)
