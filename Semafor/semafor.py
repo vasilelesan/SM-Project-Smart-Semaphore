@@ -16,7 +16,11 @@ buzzer = Pin(8, Pin.OUT)
 
 # Bluetooth UART
 uart = UART(0, baudrate=9600)
+
+# Stări de control
 semafor_activ = True
+mod_fortat = False
+culoare_fortata = None
 
 def read_distance_cm():
     trig.low()
@@ -36,7 +40,6 @@ def verde_to_rosu():
     sleep(0.5)
     yellow.value(0)
     red.value(1)
-    #  buzzer la intrarea pe roșu
     for _ in range(3):
         buzzer.value(1)
         sleep(0.1)
@@ -60,19 +63,51 @@ while True:
     if uart.any():
         cmd = uart.read().decode().strip().lower()
         print("Comanda Bluetooth:", cmd)
+
         if cmd == "stop":
             semafor_activ = False
+            mod_fortat = False
             red.value(0)
             yellow.value(0)
             green.value(0)
             buzzer.value(0)
+
         elif cmd == "start":
             semafor_activ = True
+            mod_fortat = False
             green.value(1)
             red.value(0)
             yellow.value(0)
 
+        elif cmd == "rosu":
+            mod_fortat = True
+            if green.value() == 1:
+                verde_to_rosu()
+            elif yellow.value() == 1:
+                yellow.value(0)
+                red.value(1)
+            else:
+                red.value(1)
+                green.value(0)
+                yellow.value(0)
+
+        elif cmd == "verde":
+            mod_fortat = True
+            if red.value() == 1:
+                rosu_to_verde()
+            elif yellow.value() == 1:
+                yellow.value(0)
+                green.value(1)
+            else:
+                green.value(1)
+                red.value(0)
+                yellow.value(0)
+
     if not semafor_activ:
+        sleep(0.2)
+        continue
+
+    if mod_fortat:
         sleep(0.2)
         continue
 
@@ -85,7 +120,6 @@ while True:
 
     print("Distanta:", round(distance, 2), "cm")
 
-    #  Bip constant dacă e < 15 cm, chiar fără legătură cu culoarea
     if distance < 15:
         buzzer.value(1)
         sleep(0.1)
@@ -94,11 +128,9 @@ while True:
     else:
         buzzer.value(0)
 
-    #  Distanță sub 30 cm + suntem pe verde → schimbăm culoare
     if distance < 30 and green.value() == 1:
         verde_to_rosu()
 
-        # Monitorizare cât timp obiectul e aproape
         while True:
             dist = read_distance_cm()
             print("Monitorizare:", dist)
@@ -119,11 +151,9 @@ while True:
             sleep(0.1)
 
         rosu_to_verde()
-        
-        #  Pauză de 5 secunde după verde, ignoră senzorul
+
         print("Perioadă de trecere: 5 secunde protejate")
         start_time = time.ticks_ms()
         while time.ticks_diff(time.ticks_ms(), start_time) < 5000:
             sleep(0.1)
-
 
