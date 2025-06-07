@@ -107,8 +107,7 @@ main.py, folder components/ cu fisierele: leds.py, sensor.py, buzzer.py
 
 - Aplicatie bluetooth terminal (android) pentru testarea comenzilor
 
-## Schema electronica
-![Schema](Pictures/Schema.jpeg)
+
 
 ## Anexe
 ### Părți semnificative ale codului sursă:
@@ -313,3 +312,17 @@ main.py, folder components/ cu fisierele: leds.py, sensor.py, buzzer.py
                 sleep(0.1)
 
     ```
+
+### Ilustrarea sistemului implementat:
+![Schema](Pictures/Schema.jpeg)
+
+## Concluzie
+Proiectul „Semafor inteligent” a demonstrat o aplicare practică a cunoștințelor de programare embedded, integrare hardware și comunicare serială. Utilizând Raspberry Pi Pico, senzori, leduri și Bluetooth, am reușit să realizăm un sistem funcțional care simulează comportamentul unui semafor automat cu intervenție manuală. Proiectul este modular, ușor de extins și relevant pentru aplicații educaționale și prototipuri din domeniul sistemelor inteligente de trafic.
+
+##Referințe
+- MicroPython Documentation
+- Random Nerd Tutorials – Raspberry Pi Pico Projects
+- Getting Started with the Raspberry Pi Pico (Raspberry Pi Foundation)
+- Datasheet – Raspberry Pi Pico RP2040
+- HC-SR04 Datasheet and Usage Guide
+- HC-05 Bluetooth Module Datasheet
